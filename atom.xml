@@ -162,17 +162,6 @@
         <updated>2025-09-03T16:17:09.000Z</updated>
     </entry>
     <entry>
-        <id>https://borling.daydayupup.com/posts/34201/</id>
-        <title>公告：博客临时维护通知</title>
-        <link rel="alternate" href="https://borling.daydayupup.com/posts/34201/"/>
-        <content type="html">&lt;h1 id=&#34;博客网站维护公告&#34;&gt;&lt;a href=&#34;#博客网站维护公告&#34; class=&#34;headerlink&#34; title=&#34;博客网站维护公告&#34;&gt;&lt;/a&gt;博客网站维护公告&lt;/h1&gt;&lt;p&gt;您好，访客。&lt;/p&gt;
-&lt;p&gt;由于我的个人博客网站正在经历一些技术问题，部分图片资源暂时无法正常显示。我们正在尽快处理此问题，预计不久后将恢复正常。&lt;/p&gt;
-&lt;p&gt;感谢您的理解与耐心。在此期间，如果您遇到任何加载问题，建议您稍后再访问本博客。&lt;/p&gt;
-&lt;p&gt;祝您有个美好的一天！&lt;/p&gt;
-&lt;div style=&#34;text-align: right;&#34;&gt;2025年08月31日&lt;/div&gt;</content>
-        <updated>2025-08-30T16:00:00.000Z</updated>
-    </entry>
-    <entry>
         <id>https://borling.daydayupup.com/posts/49266/</id>
         <title>ChatGPT巧思：打造个性博客Logo</title>
         <link rel="alternate" href="https://borling.daydayupup.com/posts/49266/"/>
@@ -1531,5 +1520,18 @@
         <content type="html">&lt;p&gt;&lt;img src=&#34;https://oss.borling.daydayupup.com/post/2025/01.12/1.png&#34;&gt;&lt;/p&gt;
 </content>
         <updated>2025-01-12T07:30:00.000Z</updated>
+    </entry>
+    <entry>
+        <id>https://borling.daydayupup.com/posts/61592/</id>
+        <title>明天，将与马拉松吴向东会长共频一个起跑线！</title>
+        <link rel="alternate" href="https://borling.daydayupup.com/posts/61592/"/>
+        <content type="html">&lt;div class=&#34;gallery&#34;&gt;
+  &lt;div class=&#34;fj-gallery page_img_lazyload  data&#34; data-rowHeight=&#34;220&#34; data-limit=&#34;10&#34;&gt;
+    &lt;span class=&#34;gallery-data&#34;&gt;[{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/1.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/2.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/3.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/4.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/5.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/6.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/7.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/8.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/9.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/10.png&#34;,&#34;alt&#34;:&#34;&#34;},{&#34;url&#34;:&#34;https://oss.borling.daydayupup.com/post/2024/12.06/11.png&#34;,&#34;alt&#34;:&#34;&#34;}]&lt;/span&gt;
+  &lt;/div&gt;&lt;button class=&#34;gallery-load-more&#34; style=&#34;opacity:0&#34;&gt;
+  &lt;span&gt;加载更多&lt;/span&gt;
+  &lt;i class=&#34;anzhiyufont anzhiyu-icon-arrow-down&#34;&gt;&lt;/i&gt;
+  &lt;/button&gt;&lt;/div&gt;</content>
+        <updated>2024-12-06T14:00:00.000Z</updated>
     </entry>
 </feed>
