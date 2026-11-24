@@ -1,8 +1,22 @@
 /* ============================================================
-   Liquid Glass UI for borling.daydayupup.com
-   Apple Liquid Glass (iOS 26 / macOS 26) inspired skin.
-   Loaded AFTER css/index.css — additive only, no source edits.
-   Remove this <link> to fully revert.
+   Liquid Glass skin for borling.daydayupup.com
+   Modelled on the technique used by blog.zhheo.com:
+
+     · Glass is NOT produced by transparency. Cards stay near
+       opaque (#fff) and read as "porcelain" — a porcelain
+       gradient (top-left highlight + side edge shading) plus a
+       1px white border and inset rim shadows give the illusion
+       of thickness.
+     · Depth comes from a very large, very soft shadow
+       (0 5px 100px -5px rgb(140 140 140 / 55%)), not from a
+       tight drop shadow. That diffuse glow is what makes the
+       surface feel like floating glass.
+     · True translucency + backdrop blur is reserved for
+       floating chrome: the nav bar, dropdowns, dialogs.
+       Everything that carries body text stays readable.
+
+   Loaded AFTER css/index.css — additive only.
+   Remove the <link> (or run apply_lg.py revert) to undo.
    ============================================================ */
 
 /* ---------- 1. Tokens ---------- */
@@ -12,147 +26,165 @@
   --lg-radius-btn: 16px;
   --lg-radius-sm: 12px;
 
-  --lg-blur: 30px;
-  --lg-blur-strong: 40px;
-  --lg-sat: 180%;
+  /* porcelain surface: near-pure white, the faintest blue-grey fall-off
+     at the very bottom so it reads as a solid slab, never as grey. */
+  --lg-surface: #ffffff;
+  --lg-surface-dim: #fdfdff;
+  --lg-border: transparent;
+  --lg-edge: transparent;
+  --lg-border-hair: transparent;
 
-  /* light */
-  --lg-glass: rgba(255, 255, 255, 0.30);
-  --lg-glass-strong: rgba(255, 255, 255, 0.46);
-  --lg-glass-thin: rgba(255, 255, 255, 0.20);
-  --lg-border: rgba(255, 255, 255, 0.62);
-  --lg-border-soft: rgba(255, 255, 255, 0.34);
-  --lg-rim-top: rgba(255, 255, 255, 0.92);
-  --lg-rim-side: rgba(255, 255, 255, 0.45);
-  --lg-rim-bottom: rgba(255, 255, 255, 0.20);
-  --lg-inner-tint: rgba(255, 255, 255, 0.10);
-  --lg-drop: 0 12px 32px -12px rgba(23, 36, 74, 0.20), 0 2px 8px -2px rgba(23, 36, 74, 0.07);
-  --lg-drop-hover: 0 18px 44px -14px rgba(23, 36, 74, 0.26), 0 4px 12px -3px rgba(23, 36, 74, 0.09);
-  --lg-sheen: linear-gradient(150deg, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.08) 26%, rgba(255, 255, 255, 0) 48%);
+  /* almost flat. a whisper of top light, nothing else — zhheo's cards
+     have NO visible edge and NO side shading; the shadow does the work. */
+  --lg-porcelain:
+    linear-gradient(180deg, #ffffff 0%, #ffffff 62%, #fdfeff 100%);
+
+  /* the signature: huge diffuse shadow, very low chroma */
+  --lg-shadow: 0 4px 60px -12px rgba(118, 128, 150, 0.28);
+  --lg-shadow-hover: 0 8px 76px -14px rgba(104, 118, 148, 0.34);
+
+  /* inset rim = perceived material thickness. white only, no dark edge. */
+  --lg-inset:
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.5);
+
+  /* floating chrome: genuinely translucent */
+  --lg-chrome: rgba(255, 255, 255, 0.74);
+  --lg-chrome-solid: rgba(255, 255, 255, 0.88);
+  --lg-chrome-blur: saturate(180%) blur(20px);
+
   --lg-text: #23252b;
-  --lg-text-dim: rgba(35, 37, 43, 0.74);
+  --lg-text-dim: rgba(35, 37, 43, 0.72);
+  --lg-text-2: rgba(35, 37, 43, 0.58);
 }
 
 [data-theme="dark"] {
-  --lg-glass: rgba(30, 33, 46, 0.42);
-  --lg-glass-strong: rgba(34, 37, 52, 0.56);
-  --lg-glass-thin: rgba(30, 33, 46, 0.26);
-  --lg-border: rgba(255, 255, 255, 0.13);
-  --lg-border-soft: rgba(255, 255, 255, 0.07);
-  --lg-rim-top: rgba(255, 255, 255, 0.22);
-  --lg-rim-side: rgba(255, 255, 255, 0.09);
-  --lg-rim-bottom: rgba(0, 0, 0, 0.24);
-  --lg-inner-tint: rgba(255, 255, 255, 0.035);
-  --lg-drop: 0 14px 36px -14px rgba(0, 0, 0, 0.62), 0 2px 8px -2px rgba(0, 0, 0, 0.34);
-  --lg-drop-hover: 0 20px 48px -16px rgba(0, 0, 0, 0.70), 0 4px 12px -3px rgba(0, 0, 0, 0.40);
-  --lg-sheen: linear-gradient(150deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0) 55%);
+  --lg-surface: #23262f;
+  --lg-surface-dim: #1f222a;
+  --lg-border: transparent;
+  --lg-edge: transparent;
+  --lg-border-hair: transparent;
+
+  --lg-porcelain:
+    linear-gradient(180deg, #262932 0%, #23262f 60%, #20232b 100%);
+
+  --lg-shadow: 0 4px 60px -12px rgba(0, 0, 0, 0.6);
+  --lg-shadow-hover: 0 8px 76px -14px rgba(0, 0, 0, 0.7);
+
+  /* dark cards have no white page tone to sit against, so a faint
+     light hairline replaces the bright rim used in light mode. */
+  --lg-inset:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.075);
+
+  --lg-chrome: rgba(30, 33, 43, 0.66);
+  --lg-chrome-solid: rgba(34, 37, 48, 0.86);
+
   --lg-text: #eceef4;
-  --lg-text-dim: rgba(236, 238, 244, 0.60);
+  --lg-text-dim: rgba(236, 238, 244, 0.82);
+  --lg-text-2: rgba(236, 238, 244, 0.62);
 }
 
-/* ---------- 2. Ambient backdrop (what the glass refracts) ---------- */
-/* 玻璃要能被看见，背景必须有颜色可透。这里放几团浓一点的柔光。 */
+/* ---------- 2. Ambient field ----------
+   Restrained: a cool near-white ground with soft light pools in the
+   corners. Nothing saturated — the porcelain does the work, and a
+   busy backdrop is exactly what makes translucent glass look dirty. */
 body {
-  background: transparent !important;
+  background: #f2f5fa !important;
 }
 
-/* 主题把 #web_bg 放大成 2 倍宽高（视差用），渐变被摊到视口外所以看着像白纸。
-   这里强制钉回视口大小，并让渐变按视口铺。 */
+[data-theme="dark"] body {
+  background: #0b0c10 !important;
+}
+
 #web_bg {
   position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
+  inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
   transform: none !important;
-  background-size: cover !important;
   background-color: transparent !important;
   background-image:
-    radial-gradient(58% 42% at 6% 6%, rgba(86, 124, 255, 0.82) 0%, rgba(86, 124, 255, 0) 66%),
-    radial-gradient(52% 38% at 94% 2%, rgba(255, 106, 168, 0.74) 0%, rgba(255, 106, 168, 0) 64%),
-    radial-gradient(56% 34% at 88% 62%, rgba(64, 214, 186, 0.66) 0%, rgba(64, 214, 186, 0) 64%),
-    radial-gradient(50% 32% at 12% 70%, rgba(168, 116, 255, 0.62) 0%, rgba(168, 116, 255, 0) 64%),
-    radial-gradient(46% 26% at 46% 100%, rgba(96, 150, 255, 0.50) 0%, rgba(96, 150, 255, 0) 66%),
-    linear-gradient(168deg, #dbe4fd 0%, #e6e2fb 34%, #f0e3f2 62%, #e2eef6 100%) !important;
+    radial-gradient(70% 52% at 6% -10%, rgba(205, 220, 245, 0.30) 0%, rgba(205, 220, 245, 0) 60%),
+    radial-gradient(62% 46% at 98% -6%, rgba(228, 214, 246, 0.22) 0%, rgba(228, 214, 246, 0) 60%),
+    linear-gradient(174deg, #f7f9fd 0%, #f4f6fb 46%, #f6f4fa 100%) !important;
 }
 
 [data-theme="dark"] #web_bg {
   background-image:
-    radial-gradient(58% 42% at 6% 6%, rgba(74, 104, 224, 0.72) 0%, rgba(74, 104, 224, 0) 68%),
-    radial-gradient(52% 38% at 94% 2%, rgba(150, 62, 158, 0.62) 0%, rgba(150, 62, 158, 0) 66%),
-    radial-gradient(56% 34% at 88% 62%, rgba(26, 132, 140, 0.56) 0%, rgba(26, 132, 140, 0) 66%),
-    radial-gradient(50% 32% at 12% 70%, rgba(84, 62, 170, 0.60) 0%, rgba(84, 62, 170, 0) 66%),
-    radial-gradient(46% 26% at 46% 100%, rgba(40, 78, 170, 0.50) 0%, rgba(40, 78, 170, 0) 68%),
-    linear-gradient(168deg, #131729 0%, #16132a 34%, #1b1424 62%, #101a20 100%) !important;
+    radial-gradient(70% 52% at 6% -10%, rgba(52, 70, 118, 0.22) 0%, rgba(52, 70, 118, 0) 62%),
+    radial-gradient(62% 46% at 98% -6%, rgba(74, 58, 100, 0.18) 0%, rgba(74, 58, 100, 0) 62%),
+    linear-gradient(174deg, #0d0e13 0%, #0b0c11 46%, #0c0b11 100%) !important;
 }
 
-/* ---------- 3. The glass mixin (applied via selector groups) ---------- */
-
-/* 3a. Standard cards */
+/* ---------- 3. Porcelain surfaces ----------
+   Text-bearing cards. Near-opaque, porcelain gradient, white 1px
+   border, inset rim, and the big diffuse shadow. */
 .recent-post-item,
 #aside-content .card-widget,
 #bbTimeList,
 #category-bar,
-#random-banner,
-#todayCard,
+#pagination .pagination .extend.next,
+#pagination .pagination .extend.prev,
 .post-copyright,
 #post,
 .post,
-#page,
-#archive,
-#article-container > .note,
 .flink-list-item,
 .card-archive-list-item,
+.recent-post-info,
 #footer-wrap .footer-bar,
-.search-dialog,
-#waline,
 .post-reward,
 #card-wechat,
 .sticky_layout > .card-widget {
-  background-color: var(--lg-glass) !important;
-  background-image: var(--lg-sheen) !important;
-  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
-  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
-  border: 1px solid var(--lg-border) !important;
+  background-color: var(--lg-surface) !important;
+  background-image: var(--lg-porcelain) !important;
+  border: 0 !important;
   border-radius: var(--lg-radius-card) !important;
-  box-shadow:
-    inset 0 1px 0 0 var(--lg-rim-top),
-    inset 1px 0 0 0 var(--lg-rim-side),
-    inset -1px 0 0 0 var(--lg-rim-side),
-    inset 0 -1px 0 0 var(--lg-rim-bottom),
-    var(--lg-drop) !important;
+  box-shadow: var(--lg-inset), var(--lg-shadow) !important;
   outline: none !important;
-  transition: transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1),
-              box-shadow 0.32s cubic-bezier(0.22, 0.61, 0.36, 1),
-              background-color 0.32s ease;
-  will-change: transform;
+  transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* cards that must clip their own children */
+/* clip children on cards that host imagery */
 .recent-post-item,
-#random-banner,
-#todayCard,
-#card-wechat,
-#aside-content .card-widget {
+#aside-content .card-widget,
+#card-wechat {
   overflow: hidden;
 }
 
-/* 3b. Hover lensing — lift + deepen, no layout shift */
+/* hover: the glow widens, the card barely lifts — no bounce */
 .recent-post-item:hover,
 #aside-content .card-widget:hover,
-#random-banner:hover,
 .card-archive-list-item:hover,
 .flink-list-item:hover {
-  transform: translateY(-3px) scale(1.004);
-  box-shadow:
-    inset 0 1px 0 0 var(--lg-rim-top),
-    inset 1px 0 0 0 var(--lg-rim-side),
-    inset -1px 0 0 0 var(--lg-rim-side),
-    inset 0 -1px 0 0 var(--lg-rim-bottom),
-    var(--lg-drop-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
 }
 
-/* ---------- 4. Floating capsule navigation ---------- */
+/* ---------- 4. Hero panels ----------
+   The banner + pinned card are artwork, not text surfaces, so they
+   keep their own colour and only inherit the rim + glow. */
+#random-banner,
+#todayCard {
+  background-color: var(--lg-surface) !important;
+  border: 0 !important;
+  border-radius: var(--lg-radius-card) !important;
+  box-shadow: var(--lg-inset), var(--lg-shadow) !important;
+  overflow: hidden;
+}
+
+#random-banner {
+  background-image: var(--lg-porcelain) !important;
+}
+
+#random-banner:hover {
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
+}
+
+/* ---------- 5. Floating chrome: nav ----------
+   This is the ONLY place real transparency belongs. Individual
+   capsules (nav-left / menus / nav-right) get the glass; the bar
+   itself stays invisible so it does not paint a full-width band. */
 #page-header #nav,
 #page-header.nav-fixed #nav,
 #page-header.nav-fixed > #nav {
@@ -166,42 +198,27 @@ body {
 
 #nav-group {
   position: relative;
-  margin: 8px auto 0 !important;
+  margin: 10px auto 0 !important;
   height: 52px !important;
-  padding: 0 10px 0 14px !important;
+  padding: 0 8px 0 12px !important;
   border-radius: var(--lg-radius-pill) !important;
-  background-color: var(--lg-glass-strong) !important;
-  background-image: var(--lg-sheen) !important;
-  -webkit-backdrop-filter: blur(var(--lg-blur-strong)) saturate(var(--lg-sat));
-  backdrop-filter: blur(var(--lg-blur-strong)) saturate(var(--lg-sat));
-  border: 1px solid var(--lg-border) !important;
-  box-shadow:
-    inset 0 1px 0 0 var(--lg-rim-top),
-    inset 1px 0 0 0 var(--lg-rim-side),
-    inset -1px 0 0 0 var(--lg-rim-side),
-    inset 0 -1px 0 0 var(--lg-rim-bottom),
-    var(--lg-drop) !important;
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  background-color: var(--lg-chrome) !important;
+  -webkit-backdrop-filter: var(--lg-chrome-blur);
+  backdrop-filter: var(--lg-chrome-blur);
+  border: 0 !important;
+  box-shadow: var(--lg-inset), var(--lg-shadow) !important;
+  transition: box-shadow 0.35s ease, background-color 0.35s ease;
 }
 
 #nav-group:hover {
-  box-shadow:
-    inset 0 1px 0 0 var(--lg-rim-top),
-    inset 1px 0 0 0 var(--lg-rim-side),
-    inset -1px 0 0 0 var(--lg-rim-side),
-    inset 0 -1px 0 0 var(--lg-rim-bottom),
-    var(--lg-drop-hover) !important;
+  background-color: var(--lg-chrome-solid) !important;
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
 }
 
-/* nav inner spacing so nothing hugs the capsule wall */
+/* inner rows must fill the capsule height */
 #nav #menus,
 #nav #nav-right,
-#page-header #nav #nav-right {
-  height: 52px !important;
-  display: flex;
-  align-items: center;
-}
-
+#page-header #nav #nav-right,
 #nav #blog_name,
 #nav #blog_name a,
 #nav #site-name {
@@ -214,49 +231,42 @@ body {
   color: var(--lg-text) !important;
 }
 
-/* nav links -> glass chips */
+/* nav links behave like capsule chips on hover */
 #nav #menus > div.menus_items > div > a,
 #nav #menus > div.menus_items > div > a span {
   color: var(--lg-text) !important;
   border-radius: var(--lg-radius-pill);
-  transition: background-color 0.24s ease, color 0.24s ease;
+  transition: background-color 0.22s ease, color 0.22s ease;
 }
 
 #nav #menus > div.menus_items > div > a:hover {
-  background-color: var(--lg-glass-thin) !important;
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  backdrop-filter: blur(10px) saturate(160%);
+  background-color: rgba(120, 140, 175, 0.10) !important;
 }
 
-/* nav icon buttons */
 #nav-right .nav-button a,
-#nav #toggle-menu a,
-#nav #search-button span {
+#nav #toggle-menu a {
   border-radius: var(--lg-radius-pill) !important;
-  transition: background-color 0.24s ease;
+  transition: background-color 0.22s ease;
 }
 
 #nav-right .nav-button a:hover,
 #nav #toggle-menu a:hover {
-  background-color: var(--lg-glass-thin) !important;
+  background-color: rgba(120, 140, 175, 0.12) !important;
 }
 
 #nav #nav-totop {
   border-radius: var(--lg-radius-pill) !important;
 }
 
-/* dropdown panels (back-menu) */
+/* dropdowns: glass + the same rim */
 .back-menu-list-groups,
 #nav .back-menu-list-groups {
-  background-color: var(--lg-glass-strong) !important;
-  background-image: var(--lg-sheen) !important;
-  -webkit-backdrop-filter: blur(var(--lg-blur-strong)) saturate(var(--lg-sat));
-  backdrop-filter: blur(var(--lg-blur-strong)) saturate(var(--lg-sat));
-  border: 1px solid var(--lg-border) !important;
-  border-radius: 20px !important;
-  box-shadow:
-    inset 0 1px 0 0 var(--lg-rim-top),
-    var(--lg-drop-hover) !important;
+  background-color: var(--lg-chrome-solid) !important;
+  -webkit-backdrop-filter: var(--lg-chrome-blur);
+  backdrop-filter: var(--lg-chrome-blur);
+  border: 0 !important;
+  border-radius: 18px !important;
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
 }
 
 .back-menu-item {
@@ -265,43 +275,37 @@ body {
 }
 
 .back-menu-item:hover {
-  background-color: var(--lg-glass-thin) !important;
+  background-color: rgba(120, 140, 175, 0.12) !important;
 }
 
-/* ---------- 5. Buttons, pills, tags ---------- */
+/* ---------- 6. Buttons, pagination, tags ---------- */
 #rightside > div > button,
 #rightside > div > div,
 #rightside .item {
-  background-color: var(--lg-glass-strong) !important;
-  background-image: var(--lg-sheen) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(var(--lg-sat));
-  backdrop-filter: blur(18px) saturate(var(--lg-sat));
-  border: 1px solid var(--lg-border) !important;
+  background-color: var(--lg-chrome-solid) !important;
+  -webkit-backdrop-filter: var(--lg-chrome-blur);
+  backdrop-filter: var(--lg-chrome-blur);
+  border: 0 !important;
   border-radius: 14px !important;
-  box-shadow:
-    inset 0 1px 0 0 var(--lg-rim-top),
-    0 6px 18px -8px rgba(23, 36, 74, 0.28) !important;
+  box-shadow: var(--lg-inset), 0 8px 32px -8px rgba(110, 125, 155, 0.42) !important;
   color: var(--lg-text) !important;
   transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 #rightside > div > button:hover {
-  transform: scale(1.06);
+  transform: scale(1.05);
+  box-shadow: var(--lg-inset), 0 10px 38px -8px rgba(110, 125, 155, 0.52) !important;
 }
 
 #pagination .page-number,
-#pagination .extend,
-#pagination .pagination .extend.next,
-#pagination .pagination .extend.prev {
-  background-color: var(--lg-glass-thin) !important;
-  background-image: var(--lg-sheen) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(var(--lg-sat));
-  backdrop-filter: blur(16px) saturate(var(--lg-sat));
-  border: 1px solid var(--lg-border-soft) !important;
+#pagination .extend {
+  background-color: var(--lg-surface) !important;
+  background-image: var(--lg-porcelain) !important;
+  border: 0 !important;
   border-radius: var(--lg-radius-btn) !important;
-  box-shadow: inset 0 1px 0 0 var(--lg-rim-top), 0 4px 14px -8px rgba(23, 36, 74, 0.24) !important;
+  box-shadow: var(--lg-inset), 0 8px 34px -10px rgba(120, 135, 165, 0.45) !important;
   color: var(--lg-text) !important;
-  transition: transform 0.22s ease, background-color 0.22s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 #pagination .page-number:hover,
@@ -311,12 +315,12 @@ body {
 
 #pagination .page-number.current {
   background-color: var(--anzhiyu-main) !important;
-  background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0) 60%) !important;
-  border-color: rgba(255, 255, 255, 0.42) !important;
+  background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 62%) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
   color: #fff !important;
   box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
-    0 8px 20px -8px var(--anzhiyu-main-op-deep) !important;
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    0 8px 34px -8px var(--anzhiyu-main-op-deep) !important;
 }
 
 .readmore,
@@ -325,9 +329,8 @@ body {
 .banner-button,
 .reward-button {
   border-radius: var(--lg-radius-pill) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(var(--lg-sat));
-  backdrop-filter: blur(14px) saturate(var(--lg-sat));
-  box-shadow: inset 0 1px 0 0 var(--lg-rim-top), 0 6px 16px -8px rgba(23, 36, 74, 0.26) !important;
+  border: 1px solid var(--lg-border);
+  box-shadow: var(--lg-inset), 0 8px 28px -10px rgba(120, 135, 165, 0.42) !important;
   transition: transform 0.24s ease;
 }
 
@@ -337,18 +340,15 @@ body {
   transform: translateY(-2px);
 }
 
-/* tags & category pills */
+/* tags & category pills: flat porcelain chips, not glass */
 .card-tags .card-tag-cloud a,
 .tag-cloud-list a,
-.category-list .category-list-link,
 #catalog-list .catalog-list-item,
 #catalog-bar .catalog-list-item a {
   border-radius: var(--lg-radius-pill) !important;
-  background-color: var(--lg-glass-thin) !important;
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
-  backdrop-filter: blur(12px) saturate(160%);
-  border: 1px solid var(--lg-border-soft) !important;
-  box-shadow: inset 0 1px 0 0 var(--lg-rim-top);
+  background-color: var(--lg-surface) !important;
+  border: 1px solid var(--lg-border-hair) !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 4px 14px -8px rgba(120, 135, 165, 0.35);
   transition: background-color 0.22s ease, transform 0.22s ease;
 }
 
@@ -357,7 +357,7 @@ body {
   transform: translateY(-1px);
 }
 
-/* ---------- 6. Content surfaces ---------- */
+/* ---------- 7. Content ---------- */
 #article-container {
   color: var(--lg-text);
 }
@@ -368,51 +368,31 @@ body {
   border-radius: var(--lg-radius-sm);
 }
 
-/* code blocks: frosted but still readable */
 figure.highlight,
 .highlight,
-#article-container pre,
-#article-container code:not([class*="language-"]) {
+#article-container pre {
   border-radius: var(--lg-radius-sm) !important;
-  border: 1px solid var(--lg-border-soft);
+  border: 1px solid var(--lg-border-hair);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 6px 26px -14px rgba(110, 125, 155, 0.4);
 }
 
-figure.highlight,
-#article-container > pre {
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 0 0 var(--lg-rim-top), 0 4px 16px -10px rgba(23, 36, 74, 0.24);
-}
-
-/* blockquote */
 #article-container blockquote {
   border-radius: var(--lg-radius-sm) !important;
   border-left: 3px solid var(--anzhiyu-main) !important;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
 }
 
-/* tables */
 #article-container table {
   border-radius: var(--lg-radius-sm);
   overflow: hidden;
 }
 
-/* post hero meta chips */
-#post-info .post-meta__tags,
-#post-info .post-meta__tag-link,
-#post-info .post-meta > div {
-  border-radius: var(--lg-radius-pill);
-}
-
-/* ---------- 7. Sidebar drawer ---------- */
+/* ---------- 8. Sidebar drawer ---------- */
 #sidebar-menus {
-  background-color: var(--lg-glass-strong) !important;
-  background-image: var(--lg-sheen) !important;
-  -webkit-backdrop-filter: blur(40px) saturate(var(--lg-sat));
-  backdrop-filter: blur(40px) saturate(var(--lg-sat));
+  background-color: var(--lg-chrome-solid) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(28px);
+  backdrop-filter: saturate(180%) blur(28px);
   border-right: 1px solid var(--lg-border) !important;
-  box-shadow: 18px 0 48px -24px rgba(23, 36, 74, 0.34);
+  box-shadow: 20px 0 80px -30px rgba(110, 125, 155, 0.5);
 }
 
 #sidebar-menus .menu-link,
@@ -422,23 +402,22 @@ figure.highlight,
 }
 
 #sidebar-menus .menu-link:hover {
-  background-color: var(--lg-glass-thin) !important;
+  background-color: rgba(120, 140, 175, 0.12) !important;
 }
 
-/* ---------- 8. Footer ---------- */
+/* ---------- 9. Footer ---------- */
 #footer {
   background: transparent !important;
-  margin-top: 24px;
+  margin-top: 20px;
 }
 
 #footer-wrap {
   border-radius: var(--lg-radius-card) var(--lg-radius-card) 0 0;
-  background-color: var(--lg-glass-thin) !important;
-  background-image: var(--lg-sheen) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(var(--lg-sat));
-  backdrop-filter: blur(20px) saturate(var(--lg-sat));
+  background-color: var(--lg-chrome) !important;
+  -webkit-backdrop-filter: var(--lg-chrome-blur);
+  backdrop-filter: var(--lg-chrome-blur);
   border-top: 1px solid var(--lg-border);
-  box-shadow: inset 0 1px 0 0 var(--lg-rim-top);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9);
 }
 
 #footer_deal .deal_link i {
@@ -446,7 +425,7 @@ figure.highlight,
 }
 
 #footer_deal .deal_link:hover i {
-  transform: translateY(-3px) scale(1.08);
+  transform: translateY(-3px) scale(1.06);
 }
 
 #footer-wrap a,
@@ -455,25 +434,21 @@ figure.highlight,
   color: var(--lg-text-dim);
 }
 
-/* ---------- 9. Search dialog & overlays ---------- */
-.search-dialog,
-#search-mask {
-  border-radius: 24px !important;
-}
-
+/* ---------- 10. Search & console ---------- */
 .search-dialog {
-  background-color: var(--lg-glass-strong) !important;
-  background-image: var(--lg-sheen) !important;
-  -webkit-backdrop-filter: blur(40px) saturate(var(--lg-sat));
-  backdrop-filter: blur(40px) saturate(var(--lg-sat));
-  border: 1px solid var(--lg-border) !important;
-  box-shadow: inset 0 1px 0 0 var(--lg-rim-top), 0 30px 80px -30px rgba(23, 36, 74, 0.45) !important;
+  background-color: var(--lg-chrome-solid) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(28px);
+  backdrop-filter: saturate(180%) blur(28px);
+  border: 0 !important;
+  border-radius: 24px !important;
+  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
 }
 
 .search-dialog .search-nav,
 .search-dialog input {
-  background-color: var(--lg-glass-thin) !important;
+  background-color: var(--lg-surface-dim) !important;
   border-radius: var(--lg-radius-sm) !important;
+  border: 1px solid var(--lg-border-hair) !important;
 }
 
 .local-search__hit-item {
@@ -481,25 +456,23 @@ figure.highlight,
 }
 
 .local-search__hit-item:hover {
-  background-color: var(--lg-glass-thin) !important;
+  background-color: rgba(120, 140, 175, 0.10) !important;
 }
 
-/* console / drawer panels */
 #console .console-card {
   border-radius: 20px !important;
-  background-color: var(--lg-glass-strong) !important;
-  background-image: var(--lg-sheen) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(var(--lg-sat));
-  backdrop-filter: blur(28px) saturate(var(--lg-sat));
-  border: 1px solid var(--lg-border) !important;
-  box-shadow: inset 0 1px 0 0 var(--lg-rim-top), var(--lg-drop) !important;
+  background-color: var(--lg-chrome-solid) !important;
+  -webkit-backdrop-filter: var(--lg-chrome-blur);
+  backdrop-filter: var(--lg-chrome-blur);
+  border: 0 !important;
+  box-shadow: var(--lg-inset), var(--lg-shadow) !important;
 }
 
-/* ---------- 10. Scrollbar & selection ---------- */
+/* ---------- 11. Scrollbar & selection ---------- */
 ::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background-color: var(--lg-glass-strong);
-  border: 1px solid var(--lg-border);
+  background-color: rgba(140, 152, 178, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 ::selection {
@@ -507,11 +480,36 @@ figure.highlight,
   color: var(--lg-text);
 }
 
-/* ---------- 11. Motion & accessibility ---------- */
+/* ---------- 12. Legibility ----------
+   Surfaces are near opaque now, so text keeps the theme's own colours.
+   Only the parts that sit on genuinely translucent chrome get a nudge. */
+[data-theme="light"] #nav #menus > div.menus_items > div > a,
+[data-theme="light"] #nav #blog_name #site-name .title {
+  color: #1c1e24 !important;
+}
+
+[data-theme="light"] .recent-post-item .article-meta-wrap,
+[data-theme="light"] .recent-post-item .article-meta-wrap a {
+  color: rgba(28, 30, 36, 0.62) !important;
+}
+
+/* hero cover titles sit on artwork — they need the outline */
+.banners-title-big,
+#todayCard .banner-text,
+#todayCard .banner-title {
+  text-shadow: 0 1px 12px rgba(15, 20, 40, 0.28);
+}
+
+[data-theme="light"] #footer-wrap,
+[data-theme="light"] #footer-wrap a,
+[data-theme="light"] #footer-wrap .copyright {
+  color: rgba(28, 30, 36, 0.66) !important;
+}
+
+/* ---------- 13. Motion & fallbacks ---------- */
 @media (prefers-reduced-motion: reduce) {
   .recent-post-item:hover,
   #aside-content .card-widget:hover,
-  #random-banner:hover,
   .card-archive-list-item:hover,
   .flink-list-item:hover,
   #rightside > div > button:hover,
@@ -521,31 +519,39 @@ figure.highlight,
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .recent-post-item,
-  #aside-content .card-widget,
-  #bbTimeList,
-  #category-bar,
-  #random-banner,
-  #todayCard,
-  .post-copyright,
-  #post,
-  #nav-group {
-    background-color: var(--anzhiyu-card-bg) !important;
+  #nav-group,
+  .back-menu-list-groups,
+  #rightside > div > button,
+  #footer-wrap,
+  #sidebar-menus,
+  .search-dialog,
+  #console .console-card {
+    background-color: rgba(250, 251, 255, 0.97) !important;
+  }
+
+  [data-theme="dark"] #nav-group,
+  [data-theme="dark"] .back-menu-list-groups,
+  [data-theme="dark"] #rightside > div > button,
+  [data-theme="dark"] #footer-wrap,
+  [data-theme="dark"] #sidebar-menus,
+  [data-theme="dark"] .search-dialog,
+  [data-theme="dark"] #console .console-card {
+    background-color: rgba(28, 30, 38, 0.97) !important;
   }
 }
 
-/* ---------- 12. Small screens ---------- */
+/* ---------- 14. Small screens ---------- */
 @media screen and (max-width: 768px) {
   :root {
     --lg-radius-card: 18px;
-    --lg-blur: 20px;
-    --lg-blur-strong: 24px;
+    --lg-shadow: 0 4px 60px -6px rgba(140, 140, 140, 0.42);
+    --lg-shadow-hover: 0 5px 66px -6px rgba(120, 130, 155, 0.5);
   }
 
   #nav-group {
-    margin: 6px auto 0 !important;
+    margin: 8px auto 0 !important;
     height: 48px !important;
-    padding: 0 6px 0 10px !important;
+    padding: 0 4px 0 8px !important;
   }
 
   #nav #menus,
@@ -563,56 +569,4 @@ figure.highlight,
   #footer-wrap {
     border-radius: 18px 18px 0 0;
   }
-}
-
-/* mobile nav keeps a solid-ish base so it stays legible over photos */
-@media screen and (max-width: 768px) {
-  #nav-group {
-    background-color: var(--lg-glass-strong) !important;
-  }
-}
-
-/* ---------- 13. Legibility on translucent surfaces ---------- */
-/* Cards are genuinely see-through now, so body copy gets a solid ink colour
-   instead of inheriting the theme's softer greys. */
-[data-theme="light"] #recent-posts .article-title,
-[data-theme="light"] .recent-post-info .article-title {
-  color: #1c1e24 !important;
-}
-
-[data-theme="light"] .recent-post-item .article-meta-wrap,
-[data-theme="light"] .recent-post-item .article-meta-wrap a,
-[data-theme="light"] .recent-post-item .post-meta-date-created {
-  color: rgba(28, 30, 36, 0.66) !important;
-}
-
-[data-theme="light"] #article-container,
-[data-theme="light"] #article-container p,
-[data-theme="light"] #article-container li {
-  color: #26282e;
-}
-
-[data-theme="light"] #catalog-list .catalog-list-item a,
-[data-theme="light"] #category-bar .catalog-list-item a {
-  color: rgba(28, 30, 36, 0.72) !important;
-}
-
-[data-theme="light"] #nav #menus > div.menus_items > div > a,
-[data-theme="light"] #nav #menus > div.menus_items > div > a span,
-[data-theme="light"] #nav #blog_name #site-name .title {
-  color: #1c1e24 !important;
-}
-
-/* white hero titles sit on light gradients — give them an outline so they hold */
-.banners-title-big,
-#todayCard .banner-text,
-.recent-post-item .post_cover .post-bg-title {
-  text-shadow: 0 1px 10px rgba(15, 20, 40, 0.22);
-}
-
-/* footer text over the ambient field */
-[data-theme="light"] #footer-wrap,
-[data-theme="light"] #footer-wrap a,
-[data-theme="light"] #footer-wrap .copyright {
-  color: rgba(28, 30, 36, 0.66) !important;
 }
