@@ -10,7 +10,7 @@ Idempotent.
 import sys, glob, os, re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-TAG = '<link rel="stylesheet" href="/css/liquid-glass.css?v=15">'
+TAG = '<link rel="stylesheet" href="/css/liquid-glass.css?v=16">'
 ANCHOR = '<link rel="stylesheet" href="/css/index.css">'
 LG_PAT = re.compile(r'<link rel="stylesheet" href="/css/liquid-glass\.css(\?v=\d+)?">')
 

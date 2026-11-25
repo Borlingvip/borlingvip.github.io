@@ -325,12 +325,49 @@ body {
   }
 }
 
+@media (min-width: 769px) {
+  /* desktop dock: a floating pill — narrower than the content column so it
+     reads as a dock, with real air above and below */
+  #nav {
+    padding: 0 24px;
+    height: 84px;
+  }
+
+  #page-header.not-top-img {
+    height: 84px;
+  }
+
+  #nav-group,
+  #nav .nav-group {
+    max-width: 1352px;
+    margin: 0 auto;
+    height: 52px;
+    padding: 0 8px;
+  }
+
+  #nav #blog_name,
+  #nav #menus,
+  #nav .menus_items {
+    height: 52px;
+  }
+
+  #nav #menus {
+    padding: 0;
+  }
+
+  #nav #nav-right .nav-button a,
+  #nav #nav-right #toggle-menu .site-page {
+    width: 30px;
+    height: 30px;
+  }
+}
+
 @media (max-width: 768px) {
   /* mobile dock: wider (smaller side gutter) and shorter
      — the previous 20px gutter + 62px pill read top-heavy */
   #page-header #nav,
   #nav {
-    padding: 0 10px;
+    padding: 0 6px;
     height: 60px;
   }
 
