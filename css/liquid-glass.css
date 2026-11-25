@@ -326,6 +326,39 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* mobile dock: wider (smaller side gutter) and shorter
+     — the previous 20px gutter + 62px pill read top-heavy */
+  #page-header #nav,
+  #nav {
+    padding: 0 10px;
+    height: 60px;
+  }
+
+  #nav-group,
+  #nav .nav-group {
+    height: 44px;
+    padding: 0 6px;
+  }
+
+  #nav #blog_name {
+    height: 44px;
+  }
+
+  #nav #blog_name #site-name .title {
+    font-size: 1.02rem;
+  }
+
+  #nav #menus,
+  #nav .menus_items {
+    height: 44px;
+  }
+
+  #nav #nav-right .nav-button a,
+  #nav #nav-right #toggle-menu .site-page {
+    width: 28px;
+    height: 28px;
+  }
+
   .recent-post-item,
   #aside-content .card-widget,
   .sticky_layout > .card-widget,
