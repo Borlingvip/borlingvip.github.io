@@ -127,7 +127,9 @@ body {
   box-shadow: var(--lg-shadow-aside) !important;
 }
 
-#card-toc {
+/* specificity must beat "#aside-content .card-widget" above */
+#aside-content .card-widget#card-toc,
+#aside-content #card-toc {
   border: 1px solid var(--lg-edge) !important;
   box-shadow: var(--lg-shadow) !important;
 }
