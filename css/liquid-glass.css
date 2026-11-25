@@ -119,11 +119,17 @@ body {
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-/* the sidebar widgets sit closer together and use the softer glow */
+/* the sidebar widgets sit closer together and use the softer glow —
+   except the TOC, which zhheo styles like a normal card */
 #aside-content .card-widget,
 .sticky_layout > .card-widget {
   border: 0 !important;
   box-shadow: var(--lg-shadow-aside) !important;
+}
+
+#card-toc {
+  border: 1px solid var(--lg-edge) !important;
+  box-shadow: var(--lg-shadow) !important;
 }
 
 .recent-post-item:hover,
