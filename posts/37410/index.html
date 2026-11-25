@@ -550,4 +550,41 @@ document.addEventListener('pjax:error', e => {
   if (e.request.status === 404) {
     pjax.loadUrl('/404.html')
   }
-})</script><script charset="UTF-8" src="https://cdn.cbd.int/anzhiyu-theme-static@1.1.5/accesskey/accesskey.js"></script></div><div id="popup-window"><div class="popup-window-title">通知</div><div class="popup-window-divider"></div><div class="popup-window-content"><div class="popup-tip">你好呀</div><div class="popup-link"><i class="anzhiyufont anzhiyu-icon-arrow-circle-right"></i></div></div></div></body></html>
+})</script><script charset="UTF-8" src="https://cdn.cbd.int/anzhiyu-theme-static@1.1.5/accesskey/accesskey.js"></script></div><div id="popup-window"><div class="popup-window-title">通知</div><div class="popup-window-divider"></div><div class="popup-window-content"><div class="popup-tip">你好呀</div><div class="popup-link"><i class="anzhiyufont anzhiyu-icon-arrow-circle-right"></i></div></div></div><!-- heolivephoto:begin -->
+<script>
+/* HeoLivePhoto 实况图 — PJAX-safe loader.
+   The theme swaps page content without a full reload, so we bootstrap
+   the library once and re-scan after each navigation. */
+(function () {
+  var SRC = '/js/heolivephoto/heolivephoto.js?v=1';
+
+  function scan() {
+    if (window.HeoLivePhoto && window.HeoLivePhoto.scan) {
+      try { window.HeoLivePhoto.scan(document); } catch (e) {}
+    }
+  }
+
+  function boot() {
+    if (window.HeoLivePhoto) { scan(); return; }
+    if (document.querySelector('script[data-heolivephoto]')) return;
+    var s = document.createElement('script');
+    s.src = SRC;
+    s.async = true;
+    s.setAttribute('data-heolivephoto', '1');
+    s.onload = scan;
+    document.head.appendChild(s);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  ['pjax:complete', 'pjax:success'].forEach(function (ev) {
+    document.addEventListener(ev, function () { setTimeout(scan, 60); });
+  });
+})();
+</script>
+<!-- heolivephoto:end -->
+</body></html>
