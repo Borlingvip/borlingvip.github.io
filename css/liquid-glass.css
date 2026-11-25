@@ -1,100 +1,78 @@
 /* ============================================================
    Liquid Glass skin for borling.daydayupup.com
-   Modelled on the technique used by blog.zhheo.com:
+   ============================================================
 
-     · Glass is NOT produced by transparency. Cards stay near
-       opaque (#fff) and read as "porcelain" — a porcelain
-       gradient (top-left highlight + side edge shading) plus a
-       1px white border and inset rim shadows give the illusion
-       of thickness.
-     · Depth comes from a very large, very soft shadow
-       (0 5px 100px -5px rgb(140 140 140 / 55%)), not from a
-       tight drop shadow. That diffuse glow is what makes the
-       surface feel like floating glass.
-     · True translucency + backdrop blur is reserved for
-       floating chrome: the nav bar, dropdowns, dialogs.
-       Everything that carries body text stays readable.
+   All numbers below were measured from the live computed styles of
+   blog.zhheo.com (getComputedStyle in a real browser), NOT read out
+   of its CSS source. Reading the source is misleading — it defines
+   several glass tokens that are never applied to the cards.
+
+   Measured reference values:
+
+     light  card    #fff  | 12px radius | 1px solid #e3e8f7
+                    box-shadow 0 8px 16px -4px rgb(44 45 48 / 4.7%)
+     light  aside   #fff  | 12px radius | no border
+                    box-shadow 0 0 12px 4px rgb(0 0 0 / 5%)
+     light  page    #f7f9fe
+     dark   card    #1b1c20 | 12px | 1px solid #3d3d3f
+                    box-shadow 0 8px 16px -4px rgb(0 0 0 / 31.4%)
+     hero   pills   rgb(255 255 255 / 15%), radius 99px,
+                    NO backdrop-filter and NO border
+
+   The lesson: the glass reads as glass because of the *thin visible
+   hairline* plus a small tight shadow on a near-white surface. It is
+   not about transparency, and it is not about a huge diffuse glow.
 
    Loaded AFTER css/index.css — additive only.
-   Remove the <link> (or run apply_lg.py revert) to undo.
+   Remove the <link> (or run apply_lg.py revert) to fully undo.
    ============================================================ */
 
 /* ---------- 1. Tokens ---------- */
 :root {
-  --lg-radius-card: 22px;
-  --lg-radius-pill: 999px;
-  --lg-radius-btn: 16px;
-  --lg-radius-sm: 12px;
+  --lg-radius-card: 12px;
+  --lg-radius-pill: 99px;
+  --lg-radius-btn: 12px;
+  --lg-radius-sm: 8px;
 
-  /* porcelain surface: near-pure white, the faintest blue-grey fall-off
-     at the very bottom so it reads as a solid slab, never as grey. */
   --lg-surface: #ffffff;
-  --lg-surface-dim: #fdfdff;
-  --lg-border: transparent;
-  --lg-edge: transparent;
-  --lg-border-hair: transparent;
+  --lg-edge: #e3e8f7;
+  --lg-page: #f7f9fe;
 
-  /* almost flat. a whisper of top light, nothing else — zhheo's cards
-     have NO visible edge and NO side shading; the shadow does the work. */
-  --lg-porcelain:
-    linear-gradient(180deg, #ffffff 0%, #ffffff 62%, #fdfeff 100%);
+  --lg-shadow: 0 8px 16px -4px rgba(44, 45, 48, 0.047);
+  --lg-shadow-hover: 0 10px 22px -6px rgba(44, 45, 48, 0.10);
+  --lg-shadow-aside: 0 0 12px 4px rgba(0, 0, 0, 0.05);
 
-  /* the signature: huge diffuse shadow, very low chroma */
-  --lg-shadow: 0 4px 60px -12px rgba(118, 128, 150, 0.28);
-  --lg-shadow-hover: 0 8px 76px -14px rgba(104, 118, 148, 0.34);
+  /* translucent chrome, used ONLY over imagery / gradients */
+  --lg-glass-15: rgba(255, 255, 255, 0.15);
+  --lg-glass-20: rgba(255, 255, 255, 0.20);
+  --lg-glass-35: rgba(255, 255, 255, 0.35);
+  --lg-glass-edge: rgba(255, 255, 255, 0.32);
 
-  /* inset rim = perceived material thickness. white only, no dark edge. */
-  --lg-inset:
-    inset 0 1px 1px rgba(255, 255, 255, 0.9),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.5);
-
-  /* floating chrome: genuinely translucent */
-  --lg-chrome: rgba(255, 255, 255, 0.74);
-  --lg-chrome-solid: rgba(255, 255, 255, 0.88);
-  --lg-chrome-blur: saturate(180%) blur(20px);
-
-  --lg-text: #23252b;
-  --lg-text-dim: rgba(35, 37, 43, 0.72);
-  --lg-text-2: rgba(35, 37, 43, 0.58);
+  --lg-text: #2c2d30;
+  --lg-text-dim: rgba(44, 45, 48, 0.68);
 }
 
 [data-theme="dark"] {
-  --lg-surface: #23262f;
-  --lg-surface-dim: #1f222a;
-  --lg-border: transparent;
-  --lg-edge: transparent;
-  --lg-border-hair: transparent;
+  --lg-surface: #1b1c20;
+  --lg-edge: #3d3d3f;
+  --lg-page: #17181c;
 
-  --lg-porcelain:
-    linear-gradient(180deg, #262932 0%, #23262f 60%, #20232b 100%);
+  --lg-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.314);
+  --lg-shadow-hover: 0 10px 22px -6px rgba(0, 0, 0, 0.45);
+  --lg-shadow-aside: 0 0 12px 4px rgba(0, 0, 0, 0.22);
 
-  --lg-shadow: 0 4px 60px -12px rgba(0, 0, 0, 0.6);
-  --lg-shadow-hover: 0 8px 76px -14px rgba(0, 0, 0, 0.7);
+  --lg-glass-15: rgba(255, 255, 255, 0.12);
+  --lg-glass-20: rgba(255, 255, 255, 0.16);
+  --lg-glass-35: rgba(255, 255, 255, 0.26);
+  --lg-glass-edge: rgba(255, 255, 255, 0.20);
 
-  /* dark cards have no white page tone to sit against, so a faint
-     light hairline replaces the bright rim used in light mode. */
-  --lg-inset:
-    inset 0 1px 0 rgba(255, 255, 255, 0.075),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.075);
-
-  --lg-chrome: rgba(30, 33, 43, 0.66);
-  --lg-chrome-solid: rgba(34, 37, 48, 0.86);
-
-  --lg-text: #eceef4;
-  --lg-text-dim: rgba(236, 238, 244, 0.82);
-  --lg-text-2: rgba(236, 238, 244, 0.62);
+  --lg-text: #e8eaef;
+  --lg-text-dim: rgba(232, 234, 239, 0.70);
 }
 
-/* ---------- 2. Ambient field ----------
-   Restrained: a cool near-white ground with soft light pools in the
-   corners. Nothing saturated — the porcelain does the work, and a
-   busy backdrop is exactly what makes translucent glass look dirty. */
+/* ---------- 2. Page ground ---------- */
 body {
-  background: #f2f5fa !important;
-}
-
-[data-theme="dark"] body {
-  background: #0b0c10 !important;
+  background: var(--lg-page) !important;
 }
 
 #web_bg {
@@ -104,305 +82,182 @@ body {
   height: 100vh !important;
   transform: none !important;
   background-color: transparent !important;
+  /* zhheo's page is essentially flat #f7f9fe. The faintest corner
+     tint is all we add — no saturated aurora. */
   background-image:
-    radial-gradient(70% 52% at 6% -10%, rgba(205, 220, 245, 0.30) 0%, rgba(205, 220, 245, 0) 60%),
-    radial-gradient(62% 46% at 98% -6%, rgba(228, 214, 246, 0.22) 0%, rgba(228, 214, 246, 0) 60%),
-    linear-gradient(174deg, #f7f9fd 0%, #f4f6fb 46%, #f6f4fa 100%) !important;
+    radial-gradient(70% 55% at 4% -8%, rgba(214, 226, 248, 0.34) 0%, rgba(214, 226, 248, 0) 62%),
+    radial-gradient(60% 48% at 99% -6%, rgba(232, 220, 248, 0.26) 0%, rgba(232, 220, 248, 0) 62%),
+    linear-gradient(180deg, #f7f9fe 0%, #f6f8fd 100%) !important;
 }
 
 [data-theme="dark"] #web_bg {
   background-image:
-    radial-gradient(70% 52% at 6% -10%, rgba(52, 70, 118, 0.22) 0%, rgba(52, 70, 118, 0) 62%),
-    radial-gradient(62% 46% at 98% -6%, rgba(74, 58, 100, 0.18) 0%, rgba(74, 58, 100, 0) 62%),
-    linear-gradient(174deg, #0d0e13 0%, #0b0c11 46%, #0c0b11 100%) !important;
+    radial-gradient(70% 55% at 4% -8%, rgba(48, 62, 104, 0.20) 0%, rgba(48, 62, 104, 0) 62%),
+    radial-gradient(60% 48% at 99% -6%, rgba(66, 52, 92, 0.16) 0%, rgba(66, 52, 92, 0) 62%),
+    linear-gradient(180deg, #17181c 0%, #15161a 100%) !important;
 }
 
-/* ---------- 3. Porcelain surfaces ----------
-   Text-bearing cards. Near-opaque, porcelain gradient, white 1px
-   border, inset rim, and the big diffuse shadow. */
+/* ---------- 3. Cards: white surface + hairline + small tight shadow ---------- */
 .recent-post-item,
 #aside-content .card-widget,
 #bbTimeList,
 #category-bar,
-#pagination .pagination .extend.next,
-#pagination .pagination .extend.prev,
 .post-copyright,
 #post,
-.post,
-.flink-list-item,
 .card-archive-list-item,
-.recent-post-info,
 #footer-wrap .footer-bar,
 .post-reward,
 #card-wechat,
-.sticky_layout > .card-widget {
+#pagination .pagination .extend.next,
+#pagination .pagination .extend.prev {
   background-color: var(--lg-surface) !important;
-  background-image: var(--lg-porcelain) !important;
-  border: 0 !important;
+  background-image: none !important;
+  border: 1px solid var(--lg-edge) !important;
   border-radius: var(--lg-radius-card) !important;
-  box-shadow: var(--lg-inset), var(--lg-shadow) !important;
-  outline: none !important;
-  transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-/* clip children on cards that host imagery */
-.recent-post-item,
-#aside-content .card-widget,
-#card-wechat {
+  box-shadow: var(--lg-shadow) !important;
   overflow: hidden;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-/* hover: the glow widens, the card barely lifts — no bounce */
+/* the sidebar widgets sit closer together and use the softer glow */
+#aside-content .card-widget,
+.sticky_layout > .card-widget {
+  border: 0 !important;
+  box-shadow: var(--lg-shadow-aside) !important;
+}
+
 .recent-post-item:hover,
 #aside-content .card-widget:hover,
-.card-archive-list-item:hover,
-.flink-list-item:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
+.card-archive-list-item:hover {
+  box-shadow: var(--lg-shadow-hover) !important;
 }
 
-/* ---------- 4. Hero panels ----------
-   The banner + pinned card are artwork, not text surfaces, so they
-   keep their own colour and only inherit the rim + glow. */
-#random-banner,
-#todayCard {
-  background-color: var(--lg-surface) !important;
+/* nested surfaces must not re-apply card chrome (double border bug) */
+.recent-post-info,
+.recent-post-item .recent-post-info,
+#post .post-content,
+#post #article-container {
+  background: transparent !important;
   border: 0 !important;
-  border-radius: var(--lg-radius-card) !important;
-  box-shadow: var(--lg-inset), var(--lg-shadow) !important;
-  overflow: hidden;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
-#random-banner {
-  background-image: var(--lg-porcelain) !important;
-}
-
-#random-banner:hover {
-  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
-}
-
-/* ---------- 5. Floating chrome: nav ----------
-   This is the ONLY place real transparency belongs. Individual
-   capsules (nav-left / menus / nav-right) get the glass; the bar
-   itself stays invisible so it does not paint a full-width band. */
-#page-header #nav,
-#page-header.nav-fixed #nav,
-#page-header.nav-fixed > #nav {
+/* ---------- 4. Nav: a floating pill bar ---------- */
+#nav {
   background: transparent !important;
   box-shadow: none !important;
-  outline: none !important;
+}
+
+#nav-group,
+#nav .nav-group {
+  background: var(--lg-surface) !important;
+  border: 1px solid var(--lg-edge) !important;
+  border-radius: var(--lg-radius-pill) !important;
+  box-shadow: var(--lg-shadow) !important;
+}
+
+#nav-group .nav-site-title,
+#nav-group #blog-info,
+#nav-group a {
+  color: var(--lg-text) !important;
+}
+
+/* when the bar is pinned to the top of a scrolled page, drop the
+   hairline so it matches zhheo's borderless hover state */
+#nav.nav-fixed #nav-group,
+#nav.fixed #nav-group {
+  box-shadow: var(--lg-shadow-hover) !important;
+}
+
+/* ---------- 5. Pills over imagery: translucent, NO blur ----------
+   zhheo's hero pills are just rgb(255 255 255 / 15%) with a 99px
+   radius. No backdrop-filter, no border. Over a gradient that is
+   already enough to read as glass, and skipping the blur keeps it
+   cheap and free of dirty grey edges. */
+#page-header .post-meta > span,
+#page-header .post-meta-original,
+#page-header .post-meta-ttstime-bar,
+#page-header .post-meta-date,
+#page-header .post-meta-position,
+#page-header .post-meta-like,
+#page-header .post-meta-comment,
+.post-meta-original,
+.post-meta-ttstime-bar {
+  background: var(--lg-glass-15) !important;
   border: 0 !important;
-  -webkit-backdrop-filter: none !important;
+  border-radius: var(--lg-radius-pill) !important;
   backdrop-filter: none !important;
-}
-
-#nav-group {
-  position: relative;
-  margin: 10px auto 0 !important;
-  height: 52px !important;
-  padding: 0 8px 0 12px !important;
-  border-radius: var(--lg-radius-pill) !important;
-  background-color: var(--lg-chrome) !important;
-  -webkit-backdrop-filter: var(--lg-chrome-blur);
-  backdrop-filter: var(--lg-chrome-blur);
-  border: 0 !important;
-  box-shadow: var(--lg-inset), var(--lg-shadow) !important;
-  transition: box-shadow 0.35s ease, background-color 0.35s ease;
-}
-
-#nav-group:hover {
-  background-color: var(--lg-chrome-solid) !important;
-  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
-}
-
-/* inner rows must fill the capsule height */
-#nav #menus,
-#nav #nav-right,
-#page-header #nav #nav-right,
-#nav #blog_name,
-#nav #blog_name a,
-#nav #site-name {
-  height: 52px !important;
-  display: flex;
-  align-items: center;
-}
-
-#nav #blog_name #site-name .title {
-  color: var(--lg-text) !important;
-}
-
-/* nav links behave like capsule chips on hover */
-#nav #menus > div.menus_items > div > a,
-#nav #menus > div.menus_items > div > a span {
-  color: var(--lg-text) !important;
-  border-radius: var(--lg-radius-pill);
-  transition: background-color 0.22s ease, color 0.22s ease;
-}
-
-#nav #menus > div.menus_items > div > a:hover {
-  background-color: rgba(120, 140, 175, 0.10) !important;
-}
-
-#nav-right .nav-button a,
-#nav #toggle-menu a {
-  border-radius: var(--lg-radius-pill) !important;
-  transition: background-color 0.22s ease;
-}
-
-#nav-right .nav-button a:hover,
-#nav #toggle-menu a:hover {
-  background-color: rgba(120, 140, 175, 0.12) !important;
-}
-
-#nav #nav-totop {
-  border-radius: var(--lg-radius-pill) !important;
-}
-
-/* dropdowns: glass + the same rim */
-.back-menu-list-groups,
-#nav .back-menu-list-groups {
-  background-color: var(--lg-chrome-solid) !important;
-  -webkit-backdrop-filter: var(--lg-chrome-blur);
-  backdrop-filter: var(--lg-chrome-blur);
-  border: 0 !important;
-  border-radius: 18px !important;
-  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
-}
-
-.back-menu-item {
-  border-radius: var(--lg-radius-sm) !important;
-  transition: background-color 0.2s ease;
-}
-
-.back-menu-item:hover {
-  background-color: rgba(120, 140, 175, 0.12) !important;
-}
-
-/* ---------- 6. Buttons, pagination, tags ---------- */
-#rightside > div > button,
-#rightside > div > div,
-#rightside .item {
-  background-color: var(--lg-chrome-solid) !important;
-  -webkit-backdrop-filter: var(--lg-chrome-blur);
-  backdrop-filter: var(--lg-chrome-blur);
-  border: 0 !important;
-  border-radius: 14px !important;
-  box-shadow: var(--lg-inset), 0 8px 32px -8px rgba(110, 125, 155, 0.42) !important;
-  color: var(--lg-text) !important;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-#rightside > div > button:hover {
-  transform: scale(1.05);
-  box-shadow: var(--lg-inset), 0 10px 38px -8px rgba(110, 125, 155, 0.52) !important;
-}
-
-#pagination .page-number,
-#pagination .extend {
-  background-color: var(--lg-surface) !important;
-  background-image: var(--lg-porcelain) !important;
-  border: 0 !important;
-  border-radius: var(--lg-radius-btn) !important;
-  box-shadow: var(--lg-inset), 0 8px 34px -10px rgba(120, 135, 165, 0.45) !important;
-  color: var(--lg-text) !important;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-#pagination .page-number:hover,
-#pagination .extend:hover {
-  transform: translateY(-2px);
-}
-
-#pagination .page-number.current {
-  background-color: var(--anzhiyu-main) !important;
-  background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 62%) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
+  -webkit-backdrop-filter: none !important;
   color: #fff !important;
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.5),
-    0 8px 34px -8px var(--anzhiyu-main-op-deep) !important;
 }
 
+.post-meta-ttstime-bar {
+  background: var(--lg-glass-35) !important;
+}
+
+/* ---------- 6. Buttons ---------- */
 .readmore,
 .button--animated,
 #card-info-btn,
 .banner-button,
-.reward-button {
-  border-radius: var(--lg-radius-pill) !important;
-  border: 1px solid var(--lg-border);
-  box-shadow: var(--lg-inset), 0 8px 28px -10px rgba(120, 135, 165, 0.42) !important;
-  transition: transform 0.24s ease;
+.reward-button,
+#pagination .pagination .extend.next,
+#pagination .pagination .extend.prev {
+  background: var(--lg-surface) !important;
+  border: 1px solid var(--lg-edge) !important;
+  border-radius: var(--lg-radius-btn) !important;
+  box-shadow: none !important;
+  color: var(--lg-text) !important;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 .readmore:hover,
+.button--animated:hover,
 #card-info-btn:hover,
-.banner-button:hover {
-  transform: translateY(-2px);
-}
-
-/* tags & category pills: flat porcelain chips, not glass */
-.card-tags .card-tag-cloud a,
-.tag-cloud-list a,
-#catalog-list .catalog-list-item,
-#catalog-bar .catalog-list-item a {
-  border-radius: var(--lg-radius-pill) !important;
-  background-color: var(--lg-surface) !important;
-  border: 1px solid var(--lg-border-hair) !important;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 4px 14px -8px rgba(120, 135, 165, 0.35);
-  transition: background-color 0.22s ease, transform 0.22s ease;
-}
-
-.card-tags .card-tag-cloud a:hover,
-.tag-cloud-list a:hover {
+.banner-button:hover,
+.reward-button:hover {
+  box-shadow: var(--lg-shadow-hover) !important;
   transform: translateY(-1px);
 }
 
-/* ---------- 7. Content ---------- */
-#article-container {
-  color: var(--lg-text);
+/* ---------- 7. Tags / category chips ---------- */
+#category-bar .category-bar-item,
+.category-bar-item,
+.post-tags a,
+.tag-cloud a,
+.article-sort-item-tags a {
+  background: transparent !important;
+  border: 1px solid var(--lg-edge) !important;
+  border-radius: var(--lg-radius-pill) !important;
+  color: var(--lg-text-dim) !important;
+  transition: border-color 0.25s ease, color 0.25s ease;
 }
 
-#article-container img,
-#article-container .img-wrap,
-.post_cover img {
-  border-radius: var(--lg-radius-sm);
+#category-bar .category-bar-item.select,
+.category-bar-item.select {
+  background: var(--lg-surface) !important;
+  border-color: var(--lg-edge) !important;
+  color: var(--lg-text) !important;
+  box-shadow: var(--lg-shadow) !important;
 }
 
-figure.highlight,
-.highlight,
-#article-container pre {
-  border-radius: var(--lg-radius-sm) !important;
-  border: 1px solid var(--lg-border-hair);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 6px 26px -14px rgba(110, 125, 155, 0.4);
+.post-tags a:hover,
+.tag-cloud a:hover {
+  border-color: var(--lg-text-dim) !important;
+  color: var(--lg-text) !important;
 }
 
-#article-container blockquote {
-  border-radius: var(--lg-radius-sm) !important;
-  border-left: 3px solid var(--anzhiyu-main) !important;
-}
-
-#article-container table {
-  border-radius: var(--lg-radius-sm);
-  overflow: hidden;
-}
-
-/* ---------- 8. Sidebar drawer ---------- */
-#sidebar-menus {
-  background-color: var(--lg-chrome-solid) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(28px);
-  backdrop-filter: saturate(180%) blur(28px);
-  border-right: 1px solid var(--lg-border) !important;
-  box-shadow: 20px 0 80px -30px rgba(110, 125, 155, 0.5);
-}
-
-#sidebar-menus .menu-link,
-#sidebar-menus .rightMenu-item {
-  border-radius: var(--lg-radius-sm) !important;
-  transition: background-color 0.2s ease;
-}
-
-#sidebar-menus .menu-link:hover {
-  background-color: rgba(120, 140, 175, 0.12) !important;
+/* ---------- 8. Search / inputs ---------- */
+#search-dialog .search-dialog,
+#search-dialog .search-nav,
+.local-search-box,
+#local-search-input,
+.search-dialog .search-box input {
+  background: var(--lg-surface) !important;
+  border: 1px solid var(--lg-edge) !important;
+  border-radius: var(--lg-radius-card) !important;
+  box-shadow: var(--lg-shadow) !important;
 }
 
 /* ---------- 9. Footer ---------- */
@@ -412,161 +267,65 @@ figure.highlight,
 }
 
 #footer-wrap {
-  border-radius: var(--lg-radius-card) var(--lg-radius-card) 0 0;
-  background-color: var(--lg-chrome) !important;
-  -webkit-backdrop-filter: var(--lg-chrome-blur);
-  backdrop-filter: var(--lg-chrome-blur);
-  border-top: 1px solid var(--lg-border);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9);
-}
-
-#footer_deal .deal_link i {
-  transition: transform 0.24s ease;
-}
-
-#footer_deal .deal_link:hover i {
-  transform: translateY(-3px) scale(1.06);
-}
-
-#footer-wrap a,
-#footer-wrap .copyright,
-#footer-wrap .footer-separator {
-  color: var(--lg-text-dim);
-}
-
-/* ---------- 10. Search & console ---------- */
-.search-dialog {
-  background-color: var(--lg-chrome-solid) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(28px);
-  backdrop-filter: saturate(180%) blur(28px);
+  background: transparent !important;
   border: 0 !important;
-  border-radius: 24px !important;
-  box-shadow: var(--lg-inset), var(--lg-shadow-hover) !important;
+  box-shadow: none !important;
+  color: var(--lg-text-dim) !important;
 }
 
-.search-dialog .search-nav,
-.search-dialog input {
-  background-color: var(--lg-surface-dim) !important;
-  border-radius: var(--lg-radius-sm) !important;
-  border: 1px solid var(--lg-border-hair) !important;
+/* ---------- 10. Sidebar drawer ---------- */
+#sidebar-menus {
+  background: var(--lg-surface) !important;
+  border-right: 1px solid var(--lg-edge) !important;
 }
 
-.local-search__hit-item {
-  border-radius: var(--lg-radius-sm);
-}
-
-.local-search__hit-item:hover {
-  background-color: rgba(120, 140, 175, 0.10) !important;
-}
-
-#console .console-card {
-  border-radius: 20px !important;
-  background-color: var(--lg-chrome-solid) !important;
-  -webkit-backdrop-filter: var(--lg-chrome-blur);
-  backdrop-filter: var(--lg-chrome-blur);
-  border: 0 !important;
-  box-shadow: var(--lg-inset), var(--lg-shadow) !important;
-}
-
-/* ---------- 11. Scrollbar & selection ---------- */
-::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background-color: rgba(140, 152, 178, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-::selection {
-  background: var(--anzhiyu-main-op);
+/* ---------- 11. Typography ---------- */
+body {
   color: var(--lg-text);
 }
 
-/* ---------- 12. Legibility ----------
-   Surfaces are near opaque now, so text keeps the theme's own colours.
-   Only the parts that sit on genuinely translucent chrome get a nudge. */
-[data-theme="light"] #nav #menus > div.menus_items > div > a,
-[data-theme="light"] #nav #blog_name #site-name .title {
-  color: #1c1e24 !important;
+#article-container,
+.post-content,
+.recent-post-info .article-title,
+.article-title {
+  color: var(--lg-text);
 }
 
-[data-theme="light"] .recent-post-item .article-meta-wrap,
-[data-theme="light"] .recent-post-item .article-meta-wrap a {
-  color: rgba(28, 30, 36, 0.62) !important;
+.recent-post-info .post-meta,
+.recent-post-item .post-meta,
+.post-meta-date,
+.post-meta-categories {
+  color: var(--lg-text-dim) !important;
 }
 
-/* hero cover titles sit on artwork — they need the outline */
-.banners-title-big,
-#todayCard .banner-text,
-#todayCard .banner-title {
-  text-shadow: 0 1px 12px rgba(15, 20, 40, 0.28);
-}
-
-[data-theme="light"] #footer-wrap,
-[data-theme="light"] #footer-wrap a,
-[data-theme="light"] #footer-wrap .copyright {
-  color: rgba(28, 30, 36, 0.66) !important;
-}
-
-/* ---------- 13. Motion & fallbacks ---------- */
+/* ---------- 12. Degrade gracefully ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .recent-post-item:hover,
-  #aside-content .card-widget:hover,
-  .card-archive-list-item:hover,
-  .flink-list-item:hover,
-  #rightside > div > button:hover,
-  #pagination .page-number:hover {
+  .recent-post-item,
+  .readmore,
+  .button--animated,
+  #card-info-btn,
+  .banner-button,
+  .reward-button {
+    transition: none !important;
+  }
+  .readmore:hover,
+  .button--animated:hover,
+  #card-info-btn:hover,
+  .banner-button:hover,
+  .reward-button:hover {
     transform: none !important;
   }
 }
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  #nav-group,
-  .back-menu-list-groups,
-  #rightside > div > button,
-  #footer-wrap,
-  #sidebar-menus,
-  .search-dialog,
-  #console .console-card {
-    background-color: rgba(250, 251, 255, 0.97) !important;
-  }
-
-  [data-theme="dark"] #nav-group,
-  [data-theme="dark"] .back-menu-list-groups,
-  [data-theme="dark"] #rightside > div > button,
-  [data-theme="dark"] #footer-wrap,
-  [data-theme="dark"] #sidebar-menus,
-  [data-theme="dark"] .search-dialog,
-  [data-theme="dark"] #console .console-card {
-    background-color: rgba(28, 30, 38, 0.97) !important;
-  }
-}
-
-/* ---------- 14. Small screens ---------- */
-@media screen and (max-width: 768px) {
-  :root {
-    --lg-radius-card: 18px;
-    --lg-shadow: 0 4px 60px -6px rgba(140, 140, 140, 0.42);
-    --lg-shadow-hover: 0 5px 66px -6px rgba(120, 130, 155, 0.5);
-  }
-
-  #nav-group {
-    margin: 8px auto 0 !important;
-    height: 48px !important;
-    padding: 0 4px 0 8px !important;
-  }
-
-  #nav #menus,
-  #nav #nav-right,
-  #nav #blog_name,
-  #nav #site-name {
-    height: 48px !important;
-  }
-
-  .recent-post-item:hover,
-  #aside-content .card-widget:hover {
-    transform: none;
-  }
-
-  #footer-wrap {
-    border-radius: 18px 18px 0 0;
+@media (max-width: 768px) {
+  .recent-post-item,
+  #aside-content .card-widget,
+  .sticky_layout > .card-widget,
+  #post,
+  #category-bar,
+  #bbTimeList,
+  .card-archive-list-item,
+  .post-copyright {
+    border-radius: 10px !important;
   }
 }
